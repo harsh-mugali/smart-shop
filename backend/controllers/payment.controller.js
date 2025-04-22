@@ -1,7 +1,6 @@
 import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import { stripe } from "../lib/stripe.js";
-
 export const createCheckoutSession = async (req, res) => {
 	try {
 		const { products, couponCode } = req.body;
@@ -72,7 +71,6 @@ export const createCheckoutSession = async (req, res) => {
 		res.status(500).json({ message: "Error processing checkout", error: error.message });
 	}
 };
-
 export const checkoutSuccess = async (req, res) => {
 	try {
 		const { sessionId } = req.body;

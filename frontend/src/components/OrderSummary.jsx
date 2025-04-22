@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { useCartStore } from "../stores/useCartStore";
 import { Link } from "react-router-dom";
-import { MoveRight } from "lucide-react";
+import { LogIn, MoveRight } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "../lib/axios";
 
 const stripePromise = loadStripe(
-	"pk_test_51KZYccCoOZF2UhtOwdXQl3vcizup20zqKqT9hVUIsVzsdBrhqbUI2fE0ZdEVLdZfeHjeyFXtqaNsyCJCmZWnjNZa00PzMAjlcL"
+	"pk_test_51RFyS3CSJ9cPBCm78reWZcfLL9WqBeNdNJPLYirhi9I606mSaijYKtlnl1qGPFUNzDqjHHjKAOY7Z24UDf9jUD1A00GN5Jj2qJ"
 );
 
 const OrderSummary = () => {
@@ -17,8 +17,13 @@ const OrderSummary = () => {
 	const formattedTotal = total.toFixed(2);
 	const formattedSavings = savings.toFixed(2);
 
+	console.log(coupon);
+
 	const handlePayment = async () => {
 		const stripe = await stripePromise;
+
+		console.log(cart);
+		
 		const res = await axios.post("/payments/create-checkout-session", {
 			products: cart,
 			couponCode: coupon ? coupon.code : null,
@@ -47,25 +52,26 @@ const OrderSummary = () => {
 				<div className='space-y-2'>
 					<dl className='flex items-center justify-between gap-4'>
 						<dt className='text-base font-normal text-gray-300'>Original price</dt>
-						<dd className='text-base font-medium text-white'>${formattedSubtotal}</dd>
+						<dd className='text-base font-medium text-white'>₹{formattedSubtotal}</dd>
 					</dl>
 
 					{savings > 0 && (
 						<dl className='flex items-center justify-between gap-4'>
 							<dt className='text-base font-normal text-gray-300'>Savings</dt>
-							<dd className='text-base font-medium text-emerald-400'>-${formattedSavings}</dd>
+							<dd className='text-base font-medium text-emerald-400'>-₹{formattedSavings}</dd>
 						</dl>
 					)}
 
 					{coupon && isCouponApplied && (
 						<dl className='flex items-center justify-between gap-4'>
 							<dt className='text-base font-normal text-gray-300'>Coupon ({coupon.code})</dt>
+							
 							<dd className='text-base font-medium text-emerald-400'>-{coupon.discountPercentage}%</dd>
 						</dl>
 					)}
 					<dl className='flex items-center justify-between gap-4 border-t border-gray-600 pt-2'>
 						<dt className='text-base font-bold text-white'>Total</dt>
-						<dd className='text-base font-bold text-emerald-400'>${formattedTotal}</dd>
+						<dd className='text-base font-bold text-emerald-400'>₹{formattedTotal}</dd>
 					</dl>
 				</div>
 
