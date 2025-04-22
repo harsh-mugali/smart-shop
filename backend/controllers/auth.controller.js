@@ -1,4 +1,5 @@
 import { redis } from "../lib/redis.js";
+import Coupon from "../models/coupon.model.js";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 
@@ -32,7 +33,6 @@ const setCookies = (res, accessToken, refreshToken) => {
 		maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 	});
 };
-
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
 	try {
@@ -43,10 +43,18 @@ export const signup = async (req, res) => {
 		}
 		const user = await User.create({ name, email, password });
 
-		// authenticate
+		// ✅ Create WELCOME10 Coupon
+		await Coupon.create({
+			userId: user._id,
+			code: "WELCOME10",
+			discountPercentage: 10,
+			isActive: true,
+			expirationDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // optional: 30 days from now
+		});
+
+		// 🔐 Generate tokens and store
 		const { accessToken, refreshToken } = generateTokens(user._id);
 		await storeRefreshToken(user._id, refreshToken);
-
 		setCookies(res, accessToken, refreshToken);
 
 		res.status(201).json({
