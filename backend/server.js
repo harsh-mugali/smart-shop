@@ -16,13 +16,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
 const __dirname = path.resolve();
 
-app.use(express.json({ limit: "10mb" })); // allows you to parse the body of the request
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
-
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
@@ -30,15 +29,21 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/analytics", analyticsRoutes);
 
+// Serve frontend only in production
 if (process.env.NODE_ENV === "production") {
 	app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-	app.get("*", (req, res) => {
+	app.get("/*", (req, res) => {
 		res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+	});
+} else {
+	// Dev mode test route
+	app.get("/", (req, res) => {
+		res.status(200).json({ msg: "hello i am running in development" });
 	});
 }
 
 app.listen(PORT, () => {
-	console.log("Server is running on http://localhost:" + PORT);
+	console.log("✅ Server is running on http://localhost:" + PORT);
 	connectDB();
 });
