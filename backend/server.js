@@ -24,7 +24,7 @@ const __dirname = path.resolve();
 
 const allowedOrigins = [
   "http://localhost:5173",             // local dev frontend
-  "https://smart-shop-md5s.vercel.app/" // deployed frontend
+  "https://smart-shop-md5s.vercel.app" // deployed frontend
 ];
 
 app.use(cors({
